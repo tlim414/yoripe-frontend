@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField, type DialogProps } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, TextField, Typography, type DialogProps } from "@mui/material";
 import { useState } from "react";
 import { devLog } from "../../services/devlog";
 
@@ -71,8 +71,12 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                     {/* STEP 1: Enter title and description */}
                     {currStep === 0 && (
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
+                                Recipe Name
+                            </Typography>
                             <TextField
-                                label="Recipe Title"
+                                label=""
+                                placeholder="eg. Cream Pasta"
                                 variant="outlined"
                                 size="small"
                                 fullWidth
@@ -81,8 +85,12 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                             />
+                            <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
+                                Description / Notes
+                            </Typography>
                             <TextField
-                                label="Description"
+                                label="Any additional details..."
+                                placeholder=""
                                 variant="outlined"
                                 size="small"
                                 fullWidth
@@ -96,18 +104,62 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                     {/* STEP 2: Enter instructions and ingredients */}
                     {currStep === 1 && (
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
+                                Ingredients
+                            </Typography>
+                            <Box sx={{ display: "flex", flexDirection: "row", gap: 2.5 }}>
+                                <TextField
+                                    label="Name"
+                                    placeholder="eg. salt"
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    disabled={isSubmitting}
+                                />
+                                <TextField
+                                    label="Amount"
+                                    placeholder="eg. salt"
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    disabled={isSubmitting}
+                                />
+                                <Select
+                                    label="Unit"
+                                    value="kg"
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    disabled={isSubmitting}
+                                >
+                                    <MenuItem>kg.</MenuItem>
+                                </Select>
+                            </Box>
+                            <Button
+                                type="button"
+                                variant="contained"
+                            >
+                                Add Ingredient
+                            </Button>
+                            <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
+                                Directions
+                            </Typography>
                             <TextField
-                                label="Instructions"
+                                label=""
+                                placeholder="Explain this step..."
                                 variant="outlined"
-                                multiline
-                                rows={4}
+                                size="small"
                                 fullWidth
-                                required
                                 disabled={isSubmitting}
                                 value={instructions}
                                 onChange={(e) => setInstructions(e.target.value)}
                             />
-
+                            <Button
+                                type="button"
+                                variant="contained"
+                            >
+                                Add Step
+                            </Button>
                         </Box>
                     )}
                 </DialogContent>
