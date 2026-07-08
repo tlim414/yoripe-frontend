@@ -1,26 +1,28 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
-import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/react'
+import { Box, Container } from '@mui/material'
+import HomePage from './pages/HomePage'
+import NavBar from './components/NavBar'
+import CreateRecipe from './components/recipes/CreateRecipe'
 
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isNewRecipeModalOpen, setIsNewRecipeMomdalOpen] = useState(false);
 
   return (
-    <>
-      <header>
-        <Show when="signed-out">
-          <SignInButton />
-          <SignUpButton />
-        </Show>
-        <Show when="signed-in">
-          <UserButton />
-        </Show>
-      </header>
-    </>
+    <Container maxWidth='lg' >
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+      }}>
+        <NavBar onNewClick={() => { setIsNewRecipeMomdalOpen(true) }} />
+        <HomePage />
+      </Box>
+      <CreateRecipe isOpen={isNewRecipeModalOpen}
+       onClose={() => setIsNewRecipeMomdalOpen(false)}
+       onCreated={()=>{}} />
+    </Container>
   )
 }
 

@@ -1,0 +1,60 @@
+{
+  "title": "Spicy Chicken Ramen Bowl",
+  "description": "A hearty ramen bowl with chicken, soft-boiled eggs, and a spicy broth.",
+  "instructions": [
+    "Bring a pot of water to a boil and cook the ramen noodles according to package instructions.",
+    "Heat chicken broth in a separate pot and stir in soy sauce, sesame oil, and chili paste.",
+    "Add shredded chicken to the broth and simmer for 5 minutes.",
+    "Divide cooked noodles between serving bowls.",
+    "Pour the hot broth and chicken over the noodles.",
+    "Top with soft-boiled eggs, green onions, and nori.",
+    "Serve immediately."
+  ],
+  "ingredients": [
+    {
+      "name": "Ramen noodles",
+      "amount": 2,
+      "unit": "packs"
+    },
+    {
+      "name": "Chicken broth",
+      "amount": 4,
+      "unit": "cups"
+    },
+    {
+      "name": "Cooked chicken breast",
+      "amount": 2,
+      "unit": "cups"
+    },
+    {
+      "name": "Soy sauce",
+      "amount": 2,
+      "unit": "tbsp"
+    },
+    {
+      "name": "Sesame oil",
+      "amount": 1,
+      "unit": "tbsp"
+    },
+    {
+      "name": "Chili paste",
+      "amount": 1,
+      "unit": "tbsp"
+    },
+    {
+      "name": "Soft-boiled eggs",
+      "amount": 2,
+      "unit": "whole"
+    },
+    {
+      "name": "Green onions",
+      "amount": 2,
+      "unit": "stalks"
+    },
+    {
+      "name": "Nori sheets",
+      "amount": 2,
+      "unit": "sheets"
+    }
+  ]
+}
