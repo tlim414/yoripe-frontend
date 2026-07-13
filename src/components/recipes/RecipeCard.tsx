@@ -1,6 +1,11 @@
+// MUI
 import { Box, Card, CardContent, IconButton, Typography } from "@mui/material"
-import { devLog } from "../../services/devlog"
+
+// Types
 import type { RecipeSummary } from "../../types";
+
+// Services
+import { devLog } from "../../services/devlog"
 
 type RecipeCardProps = {
     recipe: RecipeSummary,

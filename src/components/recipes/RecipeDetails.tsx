@@ -1,13 +1,20 @@
-import { Box, Dialog, DialogContent, DialogTitle, Grid, IconButton, Menu, MenuItem, Typography } from "@mui/material"
-import type { RecipeDetail } from "../../types";
 import { useState } from "react";
 
+// MUI
+import { Box, Dialog, DialogContent, DialogTitle, Grid, IconButton, Menu, MenuItem, Typography } from "@mui/material"
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import { devLog } from "../../services/devlog";
-import { deleteRecipe } from "../../services/recipeApi";
+
+// Clerk
 import { getToken } from "@clerk/react";
+
+// Types
+import type { RecipeDetail } from "../../types";
+
+// Services
+import { deleteRecipe } from "../../services/recipeApi";
+import { devLog } from "../../services/devlog";
 
 
 type RecipeDetailsProp = {

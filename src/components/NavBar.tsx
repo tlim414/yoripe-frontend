@@ -1,8 +1,12 @@
-import { Box, Button, Container, InputAdornment, TextField } from "@mui/material";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+// MUI
+import { Box, Button, InputAdornment, TextField } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search'
 import AddIcon from '@mui/icons-material/Add'
+
+// Components
 import Login from "./auth/Login";
-import { useNavigate, useSearchParams } from "react-router-dom";
 
 type NavBarProps = {
     onNewClick: () => void,

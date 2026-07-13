@@ -1,5 +1,8 @@
-import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/react'
+// MUI
 import { Box, Container } from '@mui/material';
+
+// Clerk
+import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/react'
 
 
 export default function Login() {

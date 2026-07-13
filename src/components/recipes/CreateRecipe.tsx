@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { devLog } from "../../services/devlog";
 
 // MUI
 import {
@@ -22,6 +21,8 @@ import type { CreateRecipePayload } from "../../types";
 import { createRecipe } from "../../services/recipeApi";
 import { getToken } from "@clerk/react";
 
+// Services
+import { devLog } from "../../services/devlog";
 
 
 type NewIngredient = {

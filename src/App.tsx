@@ -1,6 +1,8 @@
 import './App.css'
-import HomePage from './pages/HomePage'
 import { BrowserRouter } from 'react-router-dom'
+
+// Components
+import HomePage from './pages/HomePage'
 
 
 function App() {

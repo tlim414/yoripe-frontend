@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import type { RecipeSummary } from "../types";
-
 // MUI
 import { Box, Container, Grid, Typography, CircularProgress } from "@mui/material";
 
 // Clerk
 import { useAuth } from "@clerk/react";
+
+// Types
+import type { RecipeSummary } from "../types";
 
 // Services
 import { devLog } from "../services/devlog";
