@@ -78,7 +78,7 @@ export default function RecipeDetails({ isOpen, onClose, recipe }: RecipeDetails
                         <MoreHorizOutlinedIcon />
                     </IconButton>
 
-                    
+
                     <Menu
                         anchorEl={menuAnchorEl}
                         open={isMenuOpen}
@@ -160,9 +160,9 @@ export default function RecipeDetails({ isOpen, onClose, recipe }: RecipeDetails
                         Instructions
                     </Typography>
                     <Box>
-                        {recipe.instructions.map((step, index) => (
-                            <Typography variant="body1">
-                                {`${index + 1}. ${step}`}
+                        {recipe.instructions.map((step, i) => (
+                            <Typography key={i} variant="body1">
+                                {`${i + 1}. ${step}`}
                             </Typography>
                         ))}
                     </Box>
