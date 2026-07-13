@@ -1,33 +1,46 @@
-import { Card, CardContent, Typography } from "@mui/material"
+import { Box, Card, CardContent, Typography } from "@mui/material"
+import { devLog } from "../../services/devlog"
+import type { RecipeSummary } from "../../types";
 
 type RecipeCardProps = {
-    recipe: {
-        id: string,
-        title: string,
-        description: string | null,
-    }
+    recipe: RecipeSummary,
+    onClick: () => void,
 }
 
 export default function RecipeCard({
     recipe,
+    onClick,
 }: RecipeCardProps) {
+
+
+    const handleCardClick = () => {
+        devLog("Recipe card clicked");
+        onClick();
+    }
 
     return (
         <Card
+            onClick={handleCardClick}
             sx={{
                 height: '100%',
                 borderRadius: 3,
-            }}>
+            }}
+        >
             {/* Add image later */}
-            <CardContent>
-                <Typography>
+            < CardContent >
+                <Typography variant="h6" sx={{ fontWeight: "600", color: "text.primary" }}>
                     {recipe.title}
                 </Typography>
 
-                <Typography>
+                <Typography variant="body1">
                     {recipe.description}
                 </Typography>
-            </CardContent>
-        </Card>
+                <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "end" }}>
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                        {new Date(recipe.createdAt).toLocaleDateString("en-ZA")}
+                    </Typography>
+                </Box>
+            </CardContent >
+        </Card >
     )
 }

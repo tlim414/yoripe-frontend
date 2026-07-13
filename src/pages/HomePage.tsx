@@ -1,22 +1,22 @@
 import { Box, Container, Grid, Typography, CircularProgress } from "@mui/material";
 import RecipeCard from "../components/recipes/RecipeCard";
 import { useEffect, useState } from "react";
-import { getRecipes } from "../services/recipeApi";
+import { getRecipe, getRecipes } from "../services/recipeApi";
 import { useAuth } from "@clerk/react";
+import RecipeDetails from "../components/recipes/RecipeDetails";
+import type { RecipeSummary } from "../types";
+import { devLog } from "../services/devlog";
 
-type Recipe = {
-    id: string;
-    title: string;
-    description: string | null;
-    createdAt: string;
-}
 
 export default function HomePage() {
     const { getToken, isLoaded, isSignedIn } = useAuth();
     const [loading, setLoading] = useState(true);
-    const [recipes, setRecipes] = useState<Recipe[]>([]);
+    const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
     const [search, setSearch] = useState("");
 
+    const [selectedRecipe, setSelectedRecipe] = useState<any | null>(null);
+
+    // API Function Calls
     async function loadRecipes() {
         if (!isLoaded || !isSignedIn) return;
 
@@ -32,8 +32,30 @@ export default function HomePage() {
         }
     }
 
+    async function loadRecipeDetail(recipeId: string) {
+        if (!isLoaded || !isSignedIn) return;
+
+        try {
+            setLoading(true);
+
+            const data = await getRecipe(getToken, recipeId);
+            devLog(data);
+            setSelectedRecipe(data);
+        } catch (error) {
+            console.error("Failed to load recipe:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // API Call Helpers
     function handleSearch() {
         loadRecipes();
+    }
+
+    function handleRecipeSelect(recipeId: string) {
+        loadRecipeDetail(recipeId);
+
     }
 
     useEffect(() => {
@@ -61,15 +83,24 @@ export default function HomePage() {
             {recipes.length === 0 ? (
                 <Typography color="text.secondary">No recipes found.</Typography>
             ) : (
-                <Grid container spacing={3}>
-                    {recipes.map((recipe) => (
-                        // Added item breakpoints so it behaves like an Instagram explore grid
-                        <Grid key={recipe.id} size={{ xs: 12, sm: 6, md: 4, }}>
-                            <RecipeCard recipe={recipe} />
-                        </Grid>
-                    ))}
-                </Grid>
+                <Box>
+                    <Grid container spacing={3}>
+                        {recipes.map((recipe) => (
+                            <Grid key={recipe.id} size={{ xs: 12, sm: 6, md: 4, }}>
+                                <RecipeCard
+                                    recipe={recipe}
+                                    onClick={() => handleRecipeSelect(recipe.id)}
+                                />
+                            </Grid>
+                        ))}
+                    </Grid>
+                    <RecipeDetails
+                        isOpen={Boolean(selectedRecipe)}
+                        recipe={selectedRecipe}
+                        onClose={() => setSelectedRecipe(null)}
+                    />
+                </Box>
             )}
         </Box>
-    );
+    )
 }
