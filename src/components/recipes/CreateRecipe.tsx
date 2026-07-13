@@ -1,6 +1,34 @@
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, TextField, Typography, type DialogProps } from "@mui/material";
 import { useState } from "react";
 import { devLog } from "../../services/devlog";
+
+// MUI
+import {
+    Box,
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    MenuItem,
+    Select,
+    TextField,
+    Typography,
+    type DialogProps
+} from "@mui/material";
+import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
+import type { CreateRecipePayload } from "../../types";
+import { createRecipe } from "../../services/recipeApi";
+import { getToken } from "@clerk/react";
+
+
+
+type NewIngredient = {
+    name: string,
+    amount: string,
+    unit: string,
+}
 
 type CreateRecipeProps = {
     isOpen: boolean,
@@ -12,7 +40,12 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
     // Form Fields
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [instructions, setInstructions] = useState("");
+    const [instructions, setInstructions] = useState<string[]>([""]);
+    const [ingredients, setIngredients] = useState<NewIngredient[]>([{
+        name: "",
+        amount: "",
+        unit: "",
+    }])
 
     // Form States
     const [currStep, setCurrStep] = useState(0);
@@ -27,7 +60,7 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
 
         setTitle("");
         setDescription("");
-        setInstructions("");
+        setInstructions([""]);
         setCurrStep(0);
         setIsSubmitting(false);
         onClose();
@@ -45,13 +78,23 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!title.trim() || !instructions.trim()) return;
+        if (!title.trim() || (instructions.length === 1 && !instructions[0].trim())) return;
 
         try {
             setIsSubmitting(true);
 
-            // Your API logic lives here
-            // await axios.post('/api/recipes', { title, description, instructions });
+            const payload: CreateRecipePayload = {
+                title: title,
+                description: description,
+                instructions: instructions,
+                ingredients: ingredients.map((ingredient) => ({
+                    ...ingredient,
+                    amount: parseFloat(ingredient.amount) || 0,
+                })),
+            }
+
+            const data = await createRecipe(getToken, payload);
+            devLog(data);
 
             onCreated();
             handleCancelOrClose();
@@ -62,6 +105,66 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
             setIsSubmitting(false); // Keeps data intact if request fails
         }
     }
+
+    // Helpers for ingredient input
+    const handleAddIngredient = () => {
+        if (!ingredients[ingredients.length - 1].name.trim()) return;
+        const newIngredient = {
+            name: "",
+            amount: "",
+            unit: "",
+        }
+        setIngredients([...ingredients, newIngredient]);
+    }
+
+    const handleDeleteIngredient = (idx: number) => {
+        if (ingredients.length === 1) {
+            const newIngredient = {
+                name: "",
+                amount: "",
+                unit: "",
+            }
+            setIngredients([newIngredient]);
+            return;
+        }
+
+        const updatedIngredients = ingredients.filter((_, i) => i !== idx);
+        setIngredients(updatedIngredients);
+    }
+
+    const handleIngredientChange = (idx: number, field: keyof NewIngredient, value: string) => {
+        const updatedIngredients = [...ingredients];
+
+        updatedIngredients[idx] = {
+            ...updatedIngredients[idx],
+            [field]: value
+        }
+
+        setIngredients(updatedIngredients);
+    }
+
+    // Helpers for instructions input
+    const handleAddInstruction = () => {
+        if (!instructions[instructions.length - 1].trim()) return;
+        setInstructions([...instructions, ""]);
+    }
+
+    const handleDeleteInstruction = (idx: number) => {
+        if (instructions.length === 1) {
+            setInstructions([""]);
+            return;
+        }
+
+        const updatedInstructions = instructions.filter((_, i) => i !== idx);
+        setInstructions(updatedInstructions);
+    }
+
+    const handleInstructionChange = (idx: number, step: string) => {
+        const updatedInstructions = [...instructions];
+        updatedInstructions[idx] = step;
+        setInstructions(updatedInstructions);
+    }
+
 
     return (
         <Dialog open={isOpen} onClose={handleDialogClose} fullWidth maxWidth="sm">
@@ -107,56 +210,106 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                             <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
                                 Ingredients
                             </Typography>
-                            <Box sx={{ display: "flex", flexDirection: "row", gap: 2.5 }}>
-                                <TextField
-                                    label="Name"
-                                    placeholder="eg. salt"
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    disabled={isSubmitting}
-                                />
-                                <TextField
-                                    label="Amount"
-                                    placeholder="eg. salt"
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    disabled={isSubmitting}
-                                />
-                                <Select
-                                    label="Unit"
-                                    value="kg"
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    disabled={isSubmitting}
+                            {ingredients.map((ingredient, i) => (
+                                <Box
+                                    key={i}
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        gap: 1
+                                    }}
                                 >
-                                    <MenuItem>kg.</MenuItem>
-                                </Select>
-                            </Box>
+                                    {/* Ingredient NAme */}
+                                    <TextField
+                                        label="Name"
+                                        placeholder="eg. salt"
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        disabled={isSubmitting}
+                                        value={ingredient.name}
+                                        onChange={(e) => handleIngredientChange(i, "name", e.target.value)}
+                                    />
+                                    {/* Ingredient Amount */}
+                                    <TextField
+                                        label="Amount"
+                                        placeholder=""
+                                        variant="outlined"
+                                        size="small"
+                                        type="number"
+                                        fullWidth
+                                        disabled={isSubmitting}
+                                        value={ingredient.amount}
+                                        onChange={(e) => handleIngredientChange(i, "amount", e.target.value)}
+                                    />
+                                    {/* Drop Down for Ingredient Unit */}
+                                    <Select
+                                        label="Unit"
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        disabled={isSubmitting}
+                                        value={ingredient.unit}
+                                        onChange={(e) => handleIngredientChange(i, "unit", e.target.value)}
+                                    >
+                                        <MenuItem value="kg">kg</MenuItem>
+                                    </Select>
+                                    <IconButton
+                                        color="error"
+                                        onClick={() => handleDeleteIngredient(i)}
+                                    >
+                                        <RemoveCircleOutlineOutlinedIcon />
+                                    </IconButton>
+                                </Box>
+                            ))}
                             <Button
                                 type="button"
                                 variant="contained"
+                                onClick={handleAddIngredient}
                             >
                                 Add Ingredient
                             </Button>
                             <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
-                                Directions
+                                Instructions
                             </Typography>
-                            <TextField
-                                label=""
-                                placeholder="Explain this step..."
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                disabled={isSubmitting}
-                                value={instructions}
-                                onChange={(e) => setInstructions(e.target.value)}
-                            />
+                            {instructions.map((step, i) => (
+                                <Box
+                                    key={i}
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "flex-start",
+                                        gap: 1,
+                                    }}
+                                >
+                                    {/* Step Num */}
+                                    <Typography>
+                                        {i + 1}
+                                    </Typography>
+                                    {/* Step Iput Field */}
+                                    <TextField
+                                        label=""
+                                        placeholder="Explain this step..."
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        disabled={isSubmitting}
+                                        value={step}
+                                        onChange={(e) => handleInstructionChange(i, e.target.value)}
+                                    />
+                                    {/* Delete Step Icon */}
+                                    <IconButton
+                                        color="error"
+                                        onClick={() => handleDeleteInstruction(i)}
+                                    >
+                                        <RemoveCircleOutlineOutlinedIcon />
+                                    </IconButton>
+                                </Box>
+                            ))}
                             <Button
                                 type="button"
                                 variant="contained"
+                                onClick={handleAddInstruction}
                             >
                                 Add Step
                             </Button>
@@ -198,7 +351,7 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                         variant="contained"
                         disabled={
                             (currStep === 0 && !title.trim()) ||
-                            (currStep === 1 && !instructions.trim()) ||
+                            (currStep === 1 && (instructions.length === 1 && !instructions[0].trim())) ||
                             isSubmitting
                         }
                         startIcon={(IS_LAST_STEP && isSubmitting) ?

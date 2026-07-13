@@ -1,3 +1,4 @@
+import type { CreateRecipePayload } from "../types";
 import { api } from "./axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -35,7 +36,17 @@ export async function getRecipe(
   return response.data;
 }
 
-// export async fucntion CreateRecipe(
-//   getToken:() => Prormise<string | null>,
-//   recipe: RecipeCard,
-// )
+export async function createRecipe(
+  getToken: () => Promise<string | null>,
+  recipePayload: CreateRecipePayload,
+) {
+  const token = await getToken();
+
+  const response = await api.post(`${API_URL}/recipes`, recipePayload,{
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+}

@@ -22,3 +22,16 @@ export type RecipeDetail = {
     createdAt: string,
     updatedAt: string,
 }
+
+export type CreateRecipeIngredientPayload = {
+    name: string,
+    amount: number,
+    unit: string,
+}
+
+export type CreateRecipePayload = {
+    title: string,
+    description: string,
+    instructions: string[],
+    ingredients: CreateRecipeIngredientPayload[],
+}
