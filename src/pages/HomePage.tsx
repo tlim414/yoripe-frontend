@@ -12,7 +12,7 @@ import RecipesPage from "./RecipesPage";
 
 
 export default function HomePage() {
-    const [isNewRecipeModalOpen, setIsNewRecipeMomdalOpen] = useState(false);
+    const [isNewRecipeModalOpen, setIsNewRecipeModalOpen] = useState(false);
 
 
 
@@ -23,11 +23,11 @@ export default function HomePage() {
                 flexDirection: 'column',
                 minHeight: '100vh',
             }}>
-                <NavBar onNewClick={() => { setIsNewRecipeMomdalOpen(true) }} />
+                <NavBar onNewClick={() => { setIsNewRecipeModalOpen(true) }} />
                 <RecipesPage />
             </Box>
             <CreateRecipe isOpen={isNewRecipeModalOpen}
-                onClose={() => setIsNewRecipeMomdalOpen(false)}
+                onClose={() => setIsNewRecipeModalOpen(false)}
                 onCreated={() => { }} />
         </Container>
     );
