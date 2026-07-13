@@ -13,10 +13,9 @@ export default function NavBar({ onNewClick }: NavBarProps) {
     const [searchParams] = useSearchParams();
     const currSearch = searchParams.get("search") || "";
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        if (value) {
-            navigate(`/?search=${encodeURIComponent(value)}`, { replace: true });
+    const handleSearchChange = (search: string) => {
+        if (search) {
+            navigate(`/?search=${encodeURIComponent(search)}`, { replace: true });
         } else {
             navigate(`/`, { replace: true });
         }
@@ -38,7 +37,7 @@ export default function NavBar({ onNewClick }: NavBarProps) {
                 variant="outlined"
                 placeholder="Search..."
                 size="small"
-                onChange={handleSearchChange}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 value={currSearch}
                 slotProps={{
                     input: {
