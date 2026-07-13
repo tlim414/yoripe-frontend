@@ -3,6 +3,7 @@ import RecipeCard from "../components/recipes/RecipeCard";
 import { useEffect, useState } from "react";
 import { getRecipe, getRecipes } from "../services/recipeApi";
 import { useAuth } from "@clerk/react";
+import { useSearchParams } from "react-router-dom";
 import RecipeDetails from "../components/recipes/RecipeDetails";
 import type { RecipeSummary } from "../types";
 import { devLog } from "../services/devlog";
@@ -12,9 +13,10 @@ export default function HomePage() {
     const { getToken, isLoaded, isSignedIn } = useAuth();
     const [loading, setLoading] = useState(true);
     const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
-    const [search, setSearch] = useState("");
-
     const [selectedRecipe, setSelectedRecipe] = useState<any | null>(null);
+    const [searchParams] = useSearchParams();
+    const searchQuery = searchParams.get("search") || "";
+
 
     // API Function Calls
     async function loadRecipes() {
@@ -22,8 +24,7 @@ export default function HomePage() {
 
         try {
             setLoading(true);
-            // Pass the search state here so your API actually uses it!
-            const data = await getRecipes(getToken, search);
+            const data = await getRecipes(getToken, searchQuery);
             setRecipes(data);
         } catch (error) {
             console.error("Failed to load recipes:", error);
@@ -49,10 +50,6 @@ export default function HomePage() {
     }
 
     // API Call Helpers
-    function handleSearch() {
-        loadRecipes();
-    }
-
     function handleRecipeSelect(recipeId: string) {
         loadRecipeDetail(recipeId);
 
@@ -60,7 +57,7 @@ export default function HomePage() {
 
     useEffect(() => {
         loadRecipes();
-    }, [isLoaded, isSignedIn]);
+    }, [isLoaded, isSignedIn, searchQuery]);
 
     if (!isLoaded || loading) {
         return (

@@ -2,13 +2,25 @@ import { Box, Button, Container, InputAdornment, TextField } from "@mui/material
 import SearchIcon from '@mui/icons-material/Search'
 import AddIcon from '@mui/icons-material/Add'
 import Login from "./auth/Login";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 type NavBarProps = {
     onNewClick: () => void,
 }
 
-export default function NavBar({onNewClick}: NavBarProps) {
+export default function NavBar({ onNewClick }: NavBarProps) {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const currSearch = searchParams.get("search") || "";
 
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (value) {
+            navigate(`/?search=${encodeURIComponent(value)}`, { replace: true });
+        } else {
+            navigate(`/`, { replace: true });
+        }
+    }
 
     return (
         <Box
@@ -26,6 +38,8 @@ export default function NavBar({onNewClick}: NavBarProps) {
                 variant="outlined"
                 placeholder="Search..."
                 size="small"
+                onChange={handleSearchChange}
+                value={currSearch}
                 slotProps={{
                     input: {
                         startAdornment: (
