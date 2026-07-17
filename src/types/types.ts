@@ -1,4 +1,4 @@
-import type { SEARCH_TYPE } from "./constants/routes"
+import type { SEARCH_TYPE } from "../constants/routes"
 
 export type Ingredient = {
     id: string

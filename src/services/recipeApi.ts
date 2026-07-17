@@ -3,7 +3,7 @@ import { api } from "./axios";
 // Constants
 import { SEARCH_TYPE } from "../constants/routes";
 // Types
-import { type SearchType, type CreateRecipePayload, type Recipe, type RecipeSummary } from "../types";
+import { type SearchType, type CreateRecipePayload, type Recipe, type RecipeSummary } from "../types/types";
 
 const API_URL = import.meta.env.VITE_API_URL;
 

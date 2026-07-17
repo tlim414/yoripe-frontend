@@ -8,4 +8,4 @@ export const SEARCH_TYPE = {
 export const QUERY_PARAMS = {
     Q: "q",
     BY: "by",
-}
+} as const;

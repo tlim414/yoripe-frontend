@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createRecipe, deleteRecipe, getRecipe, getRecipeList } from "../services/recipeApi";
 
 // Types
-import type { CreateRecipePayload, SearchType } from "../types";
+import type { CreateRecipePayload, SearchType } from "../types/types";
 
 export function useCreateRecipe() {
     const { getToken } = useAuth();

@@ -10,7 +10,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useAuth } from "@clerk/react";
 
 // Types
-import type { Recipe } from "../../types";
+import type { Recipe } from "../../types/types";
 
 // Services
 import { deleteRecipe } from "../../services/recipeApi";

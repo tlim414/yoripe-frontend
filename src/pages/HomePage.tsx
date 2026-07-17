@@ -15,7 +15,7 @@ import { QUERY_PARAMS, SEARCH_TYPE } from "../constants/routes";
 // Services
 import { devLog } from "../services/devlog";
 // Types
-import type { SearchType } from "../types";
+import type { SearchType } from "../types/types";
 
 
 
@@ -89,7 +89,7 @@ export default function HomePage() {
                     <TextField
                         variant="outlined"
                         placeholder="Search..."
-                        label= {`${searchOption === SEARCH_TYPE.ALL ? "All Fields" : searchOption}`}
+                        label={`${searchOption === SEARCH_TYPE.ALL ? "All Fields" : searchOption}`}
                         size="small"
                         onChange={(e) => handleSearchChange(e.target.value)}
                         value={currSearch}

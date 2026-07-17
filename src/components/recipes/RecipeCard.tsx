@@ -2,7 +2,7 @@
 import { Box, Card, CardContent, IconButton, Typography } from "@mui/material"
 
 // Types
-import type { RecipeSummary } from "../../types";
+import type { RecipeSummary } from "../../types/types";
 
 // Services
 import { devLog } from "../../services/devlog"

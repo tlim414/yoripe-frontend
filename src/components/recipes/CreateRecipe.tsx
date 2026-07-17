@@ -16,7 +16,7 @@ import {
     type DialogProps
 } from "@mui/material";
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
-import type { CreateRecipePayload } from "../../types";
+import type { CreateRecipePayload } from "../../types/types";
 import { createRecipe } from "../../services/recipeApi";
 import { getToken } from "@clerk/react";
 
@@ -24,6 +24,7 @@ import { getToken } from "@clerk/react";
 import { useCreateRecipe } from "../../hooks/recipes";
 // Services
 import { devLog } from "../../services/devlog";
+import { UNITS } from "../../constants/units";
 
 
 type NewIngredient = {
@@ -95,7 +96,7 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
         // If ingredient or instruction list has extra item that is empty trim it
         const hasEmptyLastStep = instructions[instructions.length - 1].trim() === "";
         const cleanedInstructions = hasEmptyLastStep ? instructions.slice(0, -1) : instructions;
-        const lastIngredient = ingredients[ingredients.length -1];
+        const lastIngredient = ingredients[ingredients.length - 1];
         const hasEmptyIngredient = lastIngredient.name.trim() === "" && lastIngredient.amount === "" && lastIngredient.unit === "";
         const cleanedIngredients = hasEmptyIngredient ? ingredients.slice(0, -1) : ingredients;
         // Create payload to create recipe
@@ -232,7 +233,7 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                                         gap: 1
                                     }}
                                 >
-                                    {/* Ingredient NAme */}
+                                    {/* Ingredient Name */}
                                     <TextField
                                         label="Name"
                                         placeholder="eg. salt"
@@ -258,18 +259,22 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                                         onChange={(e) => handleIngredientChange(i, "amount", e.target.value)}
                                     />
                                     {/* Drop Down for Ingredient Unit */}
-                                    <Select
+                                    <TextField
+                                        select
                                         label="Unit"
                                         variant="outlined"
                                         size="small"
                                         fullWidth
-                                        required
+                                        // required
                                         disabled={isSubmitting}
                                         value={ingredient.unit}
                                         onChange={(e) => handleIngredientChange(i, "unit", e.target.value)}
                                     >
-                                        <MenuItem value="kg">kg</MenuItem>
-                                    </Select>
+                                        {Object.values(UNITS).map((unit) => (
+                                            <MenuItem value={unit}>{unit || "None"}</MenuItem>
+                                        ))}
+                                    </TextField>
+                                    {/* Delete ingredient button */}
                                     <IconButton
                                         color="error"
                                         onClick={() => handleDeleteIngredient(i)}

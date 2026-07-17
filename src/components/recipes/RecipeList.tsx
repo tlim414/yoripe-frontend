@@ -12,7 +12,7 @@ import { QUERY_PARAMS, SEARCH_TYPE } from "../../constants/routes";
 // Services
 import { devLog } from "../../services/devlog";
 // Types
-import {type RecipeSummary, type SearchType } from "../../types";
+import {type RecipeSummary, type SearchType } from "../../types/types";
 
 
 export default function RecipeList() {
