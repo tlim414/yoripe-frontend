@@ -1,3 +1,5 @@
+import type { SEARCH_TYPE } from "./constants/routes"
+
 export type Ingredient = {
     id: string
     name: string,
@@ -35,3 +37,5 @@ export type CreateRecipePayload = {
     instructions: string[],
     ingredients: CreateRecipeIngredientPayload[],
 }
+
+export type SearchType = typeof SEARCH_TYPE[keyof typeof SEARCH_TYPE];

@@ -2,26 +2,27 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 // MUI
 import { Box, Grid, Typography, CircularProgress } from "@mui/material";
-// UseQuery
-import { useQueryClient } from "@tanstack/react-query";
 
 // Components
-import RecipeCard from "../components/recipes/RecipeCard";
-import { useRecipeList } from "../hooks/recipes";
-import RecipeDetails from "../components/recipes/RecipeDetails";
+import RecipeCard from "./RecipeCard";
+import { useRecipeList } from "../../hooks/recipes";
+import RecipeDetails from "./RecipeDetails";
+// Constants 
+import { SEARCH_TYPE } from "../../constants/routes";
 // Services
-import { devLog } from "../services/devlog";
+import { devLog } from "../../services/devlog";
 // Types
-import type { RecipeSummary } from "../types";
+import {type RecipeSummary, type SearchType } from "../../types";
 
 
-export default function RecipesPage() {
+export default function RecipeList() {
     const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
     const [searchParams] = useSearchParams();
-    const searchQuery = searchParams.get("search") || "";
+    const searchQuery = searchParams.get("q") || "";
+    const searchBy = searchParams.get("by") as SearchType || SEARCH_TYPE.ALL;
 
     // // Get recipe list from cache
-    const { data: recipeList = [], isLoading, isError } = useRecipeList(searchQuery);
+    const { data: recipeList = [], isLoading, isError } = useRecipeList(searchQuery, searchBy);
 
 
 
@@ -36,7 +37,7 @@ export default function RecipesPage() {
     }
 
     // Render progress circle if loading
-    if (isLoading && recipeList.length === 0) {
+    if (isLoading) {
         return (
             <Box
                 sx={{

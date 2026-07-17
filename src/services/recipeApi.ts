@@ -1,5 +1,9 @@
-import type { CreateRecipePayload, Recipe, RecipeSummary } from "../types";
 import { api } from "./axios";
+
+// Constants
+import { SEARCH_TYPE } from "../constants/routes";
+// Types
+import { type SearchType, type CreateRecipePayload, type Recipe, type RecipeSummary } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -24,13 +28,14 @@ export async function createRecipe(
 // READ
 export async function getRecipeList(
   getToken: () => Promise<string | null>,
-  search?: string,
+  searchQuery?: string,
+  searchBy?: SearchType,
 ) : Promise<RecipeSummary[]>{
   const token = await getToken();
 
   const response = await api.get(`${API_URL}/recipes`, {
     params: {
-      ...(search && { search }),
+      ...(searchQuery?.trim() && { q: searchQuery, by: searchBy || SEARCH_TYPE.ALL }),
     },
     headers: {
       Authorization: `Bearer ${token}`,
