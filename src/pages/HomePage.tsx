@@ -11,7 +11,7 @@ import CreateRecipe from "../components/recipes/CreateRecipe";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import RecipeList from "../components/recipes/RecipeList";
 // Contstants
-import { SEARCH_TYPE } from "../constants/routes";
+import { QUERY_PARAMS, SEARCH_TYPE } from "../constants/routes";
 // Services
 import { devLog } from "../services/devlog";
 // Types
@@ -26,7 +26,7 @@ export default function HomePage() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [searchOption, setSearchOption] = useState<SearchType>(SEARCH_TYPE.ALL);
-    const currSearch = searchParams.get("q") || "";
+    const currSearch = searchParams.get(QUERY_PARAMS.Q) || "";
 
     const [searchMenuAnchorEl, setSearchMenuAnchorEl] = useState<null | HTMLElement>(null);
     const isSearchMenuOpen = Boolean(searchMenuAnchorEl);
@@ -39,7 +39,7 @@ export default function HomePage() {
     const handleSearchChange = (search: string) => {
         devLog("search bar content changed");
         if (search.trim()) {
-            navigate(`/?q=${encodeURIComponent(search)}&by=${searchOption}`, { replace: true });
+            navigate(`/?${QUERY_PARAMS.Q}=${encodeURIComponent(search)}&${QUERY_PARAMS.BY}=${searchOption}`, { replace: true });
         } else {
             navigate(`/`, { replace: true });
         }
@@ -62,11 +62,11 @@ export default function HomePage() {
 
         const trimmedCurrSearch = currSearch.trim();
         if (trimmedCurrSearch) {
-            newParams.set("q", trimmedCurrSearch);
-            newParams.set("by", option);
+            newParams.set(QUERY_PARAMS.Q, trimmedCurrSearch);
+            newParams.set(QUERY_PARAMS.BY, option);
         } else {
-            newParams.delete("q");
-            newParams.delete("by");
+            newParams.delete(QUERY_PARAMS.Q);
+            newParams.delete(QUERY_PARAMS.BY);
         }
         setSearchParams(newParams);
     }

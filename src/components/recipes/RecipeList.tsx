@@ -8,7 +8,7 @@ import RecipeCard from "./RecipeCard";
 import { useRecipeList } from "../../hooks/recipes";
 import RecipeDetails from "./RecipeDetails";
 // Constants 
-import { SEARCH_TYPE } from "../../constants/routes";
+import { QUERY_PARAMS, SEARCH_TYPE } from "../../constants/routes";
 // Services
 import { devLog } from "../../services/devlog";
 // Types
@@ -18,8 +18,8 @@ import {type RecipeSummary, type SearchType } from "../../types";
 export default function RecipeList() {
     const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
     const [searchParams] = useSearchParams();
-    const searchQuery = searchParams.get("q") || "";
-    const searchBy = searchParams.get("by") as SearchType || SEARCH_TYPE.ALL;
+    const searchQuery = searchParams.get(QUERY_PARAMS.Q) || "";
+    const searchBy = searchParams.get(QUERY_PARAMS.BY) as SearchType || SEARCH_TYPE.ALL;
 
     // // Get recipe list from cache
     const { data: recipeList = [], isLoading, isError } = useRecipeList(searchQuery, searchBy);
