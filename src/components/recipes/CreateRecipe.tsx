@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 // MUI
 import {
     Box,
@@ -21,6 +20,8 @@ import type { CreateRecipePayload } from "../../types";
 import { createRecipe } from "../../services/recipeApi";
 import { getToken } from "@clerk/react";
 
+// Hooks
+import { useCreateRecipe } from "../../hooks/recipes";
 // Services
 import { devLog } from "../../services/devlog";
 
@@ -38,6 +39,9 @@ type CreateRecipeProps = {
 }
 
 export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecipeProps) {
+    // Recipe Hooks
+    const createMutation = useCreateRecipe();
+
     // Form Fields
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -62,6 +66,11 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
         setTitle("");
         setDescription("");
         setInstructions([""]);
+        setIngredients([{
+            name: "",
+            amount: "",
+            unit: "",
+        }]);
         setCurrStep(0);
         setIsSubmitting(false);
         onClose();
@@ -81,30 +90,32 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
 
         if (!title.trim() || (instructions.length === 1 && !instructions[0].trim())) return;
 
-        try {
-            setIsSubmitting(true);
+        setIsSubmitting(true);
 
-            const payload: CreateRecipePayload = {
-                title: title,
-                description: description,
-                instructions: instructions,
-                ingredients: ingredients.map((ingredient) => ({
-                    ...ingredient,
-                    amount: parseFloat(ingredient.amount) || 0,
-                })),
-            }
-
-            const data = await createRecipe(getToken, payload);
-            devLog(data);
-
-            onCreated();
-            handleCancelOrClose();
-
-            devLog("Created new recipe");
-        } catch (error) {
-            console.error("Failed to create recipe:", error);
-            setIsSubmitting(false); // Keeps data intact if request fails
+        // If ingredient or instruction list has extra item that is empty trim it
+        const hasEmptyLastStep = instructions[instructions.length - 1].trim() === "";
+        const cleanedInstructions = hasEmptyLastStep ? instructions.slice(0, -1) : instructions;
+        const lastIngredient = ingredients[ingredients.length -1];
+        const hasEmptyIngredient = lastIngredient.name.trim() === "" && lastIngredient.amount === "" && lastIngredient.unit === "";
+        const cleanedIngredients = hasEmptyIngredient ? ingredients.slice(0, -1) : ingredients;
+        // Create payload to create recipe
+        const payload: CreateRecipePayload = {
+            title: title,
+            description: description,
+            instructions: cleanedInstructions,
+            ingredients: cleanedIngredients.map((ingredient) => ({
+                ...ingredient,
+                amount: parseFloat(ingredient.amount) || 0,
+            })),
         }
+
+        createMutation.mutate(payload, {
+            onSuccess: () => {
+                onCreated();
+                handleCancelOrClose();
+            }
+        });
+        devLog("Created new recipe");
     }
 
     // Helpers for ingredient input
@@ -208,6 +219,7 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                     {/* STEP 2: Enter instructions and ingredients */}
                     {currStep === 1 && (
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+                            {/* Ingredients Section */}
                             <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
                                 Ingredients
                             </Typography>
@@ -227,6 +239,7 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                                         variant="outlined"
                                         size="small"
                                         fullWidth
+                                        required
                                         disabled={isSubmitting}
                                         value={ingredient.name}
                                         onChange={(e) => handleIngredientChange(i, "name", e.target.value)}
@@ -239,6 +252,7 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                                         size="small"
                                         type="number"
                                         fullWidth
+                                        required
                                         disabled={isSubmitting}
                                         value={ingredient.amount}
                                         onChange={(e) => handleIngredientChange(i, "amount", e.target.value)}
@@ -249,6 +263,7 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                                         variant="outlined"
                                         size="small"
                                         fullWidth
+                                        required
                                         disabled={isSubmitting}
                                         value={ingredient.unit}
                                         onChange={(e) => handleIngredientChange(i, "unit", e.target.value)}
@@ -263,6 +278,7 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                                     </IconButton>
                                 </Box>
                             ))}
+                            {/* Button to add ingredient */}
                             <Button
                                 type="button"
                                 variant="contained"
@@ -270,6 +286,8 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                             >
                                 Add Ingredient
                             </Button>
+
+                            {/* Instructions section */}
                             <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
                                 Instructions
                             </Typography>
@@ -307,6 +325,7 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                                     </IconButton>
                                 </Box>
                             ))}
+                            {/* Add step button */}
                             <Button
                                 type="button"
                                 variant="contained"

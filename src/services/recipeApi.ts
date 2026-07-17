@@ -1,4 +1,4 @@
-import type { CreateRecipePayload } from "../types";
+import type { CreateRecipePayload, Recipe, RecipeSummary } from "../types";
 import { api } from "./axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -22,10 +22,10 @@ export async function createRecipe(
 
 
 // READ
-export async function getRecipes(
+export async function getRecipeList(
   getToken: () => Promise<string | null>,
   search?: string,
-) {
+) : Promise<RecipeSummary[]>{
   const token = await getToken();
 
   const response = await api.get(`${API_URL}/recipes`, {
@@ -37,13 +37,13 @@ export async function getRecipes(
     },
   });
 
-  return response.data;
+  return response.data as RecipeSummary[];
 }
 
 export async function getRecipe(
   getToken: () => Promise<string | null>,
   recipeId: string,
-) {
+) : Promise<Recipe> {
   const token = await getToken();
 
   const response = await api.get(`${API_URL}/recipes/${recipeId}`, {
@@ -52,7 +52,7 @@ export async function getRecipe(
     },
   });
 
-  return response.data;
+  return response.data as Recipe;
 }
 
 // UPDATE

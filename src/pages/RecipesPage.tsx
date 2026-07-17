@@ -1,75 +1,42 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-
 // MUI
-import { Box, Container, Grid, Typography, CircularProgress } from "@mui/material";
-
-// Clerk
-import { useAuth } from "@clerk/react";
-
-// Types
-import type { RecipeSummary } from "../types";
-
-// Services
-import { devLog } from "../services/devlog";
-import { getRecipe, getRecipes } from "../services/recipeApi";
+import { Box, Grid, Typography, CircularProgress } from "@mui/material";
+// UseQuery
+import { useQueryClient } from "@tanstack/react-query";
 
 // Components
 import RecipeCard from "../components/recipes/RecipeCard";
+import { useRecipeList } from "../hooks/recipes";
 import RecipeDetails from "../components/recipes/RecipeDetails";
+// Services
+import { devLog } from "../services/devlog";
+// Types
+import type { RecipeSummary } from "../types";
 
 
 export default function RecipesPage() {
-    const { getToken, isLoaded, isSignedIn } = useAuth();
-    const [loading, setLoading] = useState(true);
-    const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
-    const [selectedRecipe, setSelectedRecipe] = useState<any | null>(null);
+    const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
     const [searchParams] = useSearchParams();
     const searchQuery = searchParams.get("search") || "";
 
+    // // Get recipe list from cache
+    const { data: recipeList = [], isLoading, isError } = useRecipeList(searchQuery);
 
-    // API Function Calls
-    async function loadRecipes() {
-        if (!isLoaded || !isSignedIn) return;
 
-        try {
-            setLoading(true);
-            const data = await getRecipes(getToken, searchQuery);
-            setRecipes(data);
-        } catch (error) {
-            console.error("Failed to load recipes:", error);
-        } finally {
-            setLoading(false);
-        }
-    }
 
-    async function loadRecipeDetail(recipeId: string) {
-        if (!isLoaded || !isSignedIn) return;
-
-        try {
-            setLoading(true);
-
-            const data = await getRecipe(getToken, recipeId);
-            devLog(data);
-            setSelectedRecipe(data);
-        } catch (error) {
-            console.error("Failed to load recipe:", error);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    // API Call Helpers
+    // Handle functions
     function handleRecipeSelect(recipeId: string) {
-        loadRecipeDetail(recipeId);
-
+        devLog("clicked recipe");
+        setSelectedRecipeId(recipeId);
     }
 
-    useEffect(() => {
-        loadRecipes();
-    }, [isLoaded, isSignedIn, searchQuery]);
+    function handleRecipePageClose() {
+        setSelectedRecipeId(null);
+    }
 
-    if (!isLoaded || loading) {
+    // Render progress circle if loading
+    if (isLoading && recipeList.length === 0) {
         return (
             <Box
                 sx={{
@@ -85,29 +52,57 @@ export default function RecipesPage() {
         );
     }
 
+    // Render error message if something went wrong fetching recipes
+    if (isError) {
+        return (
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '40vh',
+                    width: '100%'
+                }}
+            >
+                <Typography color="text.secondary">No recipes found.</Typography>
+            </Box>
+        );
+    }
+
+    // Render that there are no recipes
+    if (recipeList.length === 0) {
+        return (
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '40vh',
+                    width: '100%'
+                }}
+            >
+                <Typography color="text.secondary">No recipes found.</Typography>
+            </Box>
+        );
+    }
+
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 6, width: '100%' }}>
-            {recipes.length === 0 ? (
-                <Typography color="text.secondary">No recipes found.</Typography>
-            ) : (
-                <Box>
-                    <Grid container spacing={3}>
-                        {recipes.map((recipe) => (
-                            <Grid key={recipe.id} size={{ xs: 12, sm: 6, md: 4, }}>
-                                <RecipeCard
-                                    recipe={recipe}
-                                    onClick={() => handleRecipeSelect(recipe.id)}
-                                />
-                            </Grid>
-                        ))}
+            <Grid container spacing={3}>
+                {recipeList.map((recipe: RecipeSummary) => (
+                    <Grid key={recipe.id} size={{ xs: 12, sm: 6, md: 4, }}>
+                        <RecipeCard
+                            recipe={recipe}
+                            onClick={() => handleRecipeSelect(recipe.id)}
+                        />
                     </Grid>
-                    <RecipeDetails
-                        isOpen={Boolean(selectedRecipe)}
-                        recipe={selectedRecipe}
-                        onClose={() => setSelectedRecipe(null)}
-                    />
-                </Box>
-            )}
+                ))}
+            </Grid>
+            <RecipeDetails
+                isOpen={Boolean(selectedRecipeId)}
+                recipeId={selectedRecipeId}
+                onClose={() => handleRecipePageClose()}
+            />
         </Box>
     )
 }

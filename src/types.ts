@@ -12,7 +12,7 @@ export type RecipeSummary = {
     createdAt: string,
 }
 
-export type RecipeDetail = {
+export type Recipe = {
     id: string,
     userId: string,
     title: string,

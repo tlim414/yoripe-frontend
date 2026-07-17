@@ -1,37 +1,42 @@
 import { useState } from "react";
 
 // MUI
-import { Box, Dialog, DialogContent, DialogTitle, Grid, IconButton, Menu, MenuItem, Typography } from "@mui/material"
+import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, Grid, IconButton, Menu, MenuItem, Typography } from "@mui/material"
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 
 // Clerk
-import { getToken } from "@clerk/react";
+import { useAuth } from "@clerk/react";
 
 // Types
-import type { RecipeDetail } from "../../types";
+import type { Recipe } from "../../types";
 
 // Services
 import { deleteRecipe } from "../../services/recipeApi";
 import { devLog } from "../../services/devlog";
 
+// Hooks
+import { useDeleteRecipe, useRecipe } from "../../hooks/recipes";
+
 
 type RecipeDetailsProp = {
     isOpen: boolean,
     onClose: () => void,
-    recipe: RecipeDetail,
+    recipeId: string | null,
 }
 
-export default function RecipeDetails({ isOpen, onClose, recipe }: RecipeDetailsProp) {
-
-    if (!recipe) {
-        return;
-    }
-
+export default function RecipeDetails({ isOpen, onClose, recipeId }: RecipeDetailsProp) {
+    // Recipe Hooks
+    const { data: recipe, isLoading, isError } = useRecipe(recipeId);
+    const deleteMutation = useDeleteRecipe();
 
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const isMenuOpen = Boolean(menuAnchorEl);
+
+    if (!recipeId) {
+        return null;
+    }
 
 
     // Helpers for menu
@@ -46,16 +51,48 @@ export default function RecipeDetails({ isOpen, onClose, recipe }: RecipeDetails
     const handleDeleteRecipe = async (id: string) => {
         handleMenuClose();
 
-        try {
-            const data = await deleteRecipe(getToken, id);
-
-            devLog(data);
-            onClose();
-        } catch (error) {
-            console.error("Failed to delete recipe:", error);
-        }
-
+        deleteMutation.mutate(id, {
+            onSuccess: () => {
+                onClose();
+            }
+        })
     };
+
+    // Render progress circle if loading
+    if (isLoading) {
+        return (
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '40vh',
+                    width: '100%'
+                }}
+            >
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    // Render error message if something went wrong
+    if (isError || !recipe) {
+        return (
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '40vh',
+                    width: '100%'
+                }}
+            >
+                <Typography color="text.secondary">No recipes found.</Typography>
+            </Box>
+        );
+    }
+
+
 
     return (
         <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">
@@ -175,6 +212,6 @@ export default function RecipeDetails({ isOpen, onClose, recipe }: RecipeDetails
                     </Box>
                 </Box>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     )
 }
