@@ -161,7 +161,6 @@ export default function RecipeDetails({ isOpen, onClose, recipeId }: RecipeDetai
                             <DeleteOutlineOutlinedIcon fontSize="small" />
                             Delete
                         </MenuItem>
-
                     </Menu>
                 </Box>
             </Box>
