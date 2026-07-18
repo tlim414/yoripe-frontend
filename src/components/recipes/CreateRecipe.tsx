@@ -181,13 +181,17 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
 
     return (
         <Dialog open={isOpen} onClose={handleDialogClose} fullWidth maxWidth="sm">
-            <DialogTitle>New Recipe</DialogTitle>
+            <DialogTitle>
+                <Typography variant="h5" sx={{ fontWeight: '600', color: 'text.primary' }}>
+                    New Recipe
+                </Typography>
+            </DialogTitle>
             <Box component="form" onSubmit={handleSubmit}>
                 <DialogContent>
                     {/* STEP 1: Enter title and description */}
                     {currStep === 0 && (
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.primary' }}>
                                 Recipe Name
                             </Typography>
                             <TextField
@@ -201,7 +205,7 @@ export default function CreateRecipe({ isOpen, onClose, onCreated }: CreateRecip
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                             />
-                            <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.primary' }}>
                                 Description / Notes
                             </Typography>
                             <TextField
