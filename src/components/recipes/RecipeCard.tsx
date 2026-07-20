@@ -1,5 +1,5 @@
 // MUI
-import { Box, Card, CardContent, IconButton, Typography } from "@mui/material"
+import { Box, Card, CardContent, Typography } from "@mui/material"
 
 // Types
 import type { RecipeSummary } from "../../types/types";

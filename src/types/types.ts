@@ -25,17 +25,17 @@ export type Recipe = {
     updatedAt: string,
 }
 
-export type CreateRecipeIngredientPayload = {
+export type IngredientPayload = {
     name: string,
     amount: number,
     unit: string,
 }
 
-export type CreateRecipePayload = {
+export type RecipePayload = {
     title: string,
     description: string,
     instructions: string[],
-    ingredients: CreateRecipeIngredientPayload[],
+    ingredients: IngredientPayload[],
 }
 
 export type SearchType = typeof SEARCH_TYPE[keyof typeof SEARCH_TYPE];

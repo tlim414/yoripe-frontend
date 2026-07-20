@@ -5,14 +5,15 @@ import { Box, Grid, Typography, CircularProgress } from "@mui/material";
 
 // Components
 import RecipeCard from "./RecipeCard";
-import { useRecipeList } from "../../hooks/recipes";
-import RecipeDetails from "./RecipeDetails";
+import RecipeDetailsManager from "./RecipeDetailsManager";
 // Constants 
 import { QUERY_PARAMS, SEARCH_TYPE } from "../../constants/routes";
+//Hooks
+import { useRecipeList } from "../../hooks/recipes";
 // Services
 import { devLog } from "../../services/devlog";
 // Types
-import {type RecipeSummary, type SearchType } from "../../types/types";
+import { type RecipeSummary, type SearchType } from "../../types/types";
 
 
 export default function RecipeList() {
@@ -32,7 +33,7 @@ export default function RecipeList() {
         setSelectedRecipeId(recipeId);
     }
 
-    function handleRecipePageClose() {
+    function handleDialogClose() {
         setSelectedRecipeId(null);
     }
 
@@ -99,11 +100,10 @@ export default function RecipeList() {
                     </Grid>
                 ))}
             </Grid>
-            <RecipeDetails
-                isOpen={Boolean(selectedRecipeId)}
-                recipeId={selectedRecipeId}
-                onClose={() => handleRecipePageClose()}
-            />
+            {Boolean(selectedRecipeId) && <RecipeDetailsManager
+                onClose={handleDialogClose}
+                recipeId={selectedRecipeId} />
+            }
         </Box>
     )
 }

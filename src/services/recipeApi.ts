@@ -3,7 +3,7 @@ import { api } from "./axios";
 // Constants
 import { SEARCH_TYPE } from "../constants/routes";
 // Types
-import { type SearchType, type CreateRecipePayload, type Recipe, type RecipeSummary } from "../types/types";
+import { type SearchType, type RecipePayload, type Recipe, type RecipeSummary } from "../types/types";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,7 +11,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 // CREATE
 export async function createRecipe(
   getToken: () => Promise<string | null>,
-  recipePayload: CreateRecipePayload,
+  recipePayload: RecipePayload,
 ) {
   const token = await getToken();
 
@@ -61,7 +61,21 @@ export async function getRecipe(
 }
 
 // UPDATE
+export async function updateRecipe(
+  getToken: () => Promise<string | null>,
+  recipeId: string,
+  recipePayload: RecipePayload,
+) {
+  const token = await getToken();
 
+  const response = await api.patch(`${API_URL}/recipes/${recipeId}`, recipePayload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+
+  return response.data;
+}
 
 // DELETE
 export async function deleteRecipe(

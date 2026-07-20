@@ -1,15 +1,16 @@
 import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 // MUI
-import { Box, Button, Container, IconButton, InputAdornment, Menu, MenuItem, Select, TextField } from "@mui/material";
+import { Box, Button, Container, DialogTitle, IconButton, InputAdornment, Menu, MenuItem, TextField, Typography } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search'
 import AddIcon from '@mui/icons-material/Add'
 import FilterListIcon from '@mui/icons-material/FilterList';
 
 // Components
-import CreateRecipe from "../components/recipes/CreateRecipe";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import RecipeForm, { FORM_MODE } from "../components/recipes/RecipeForm";
 import RecipeList from "../components/recipes/RecipeList";
+import { AppDialog } from "../components/ui/AppDialog";
 // Contstants
 import { QUERY_PARAMS, SEARCH_TYPE } from "../constants/routes";
 // Services
@@ -21,7 +22,7 @@ import type { SearchType } from "../types/types";
 
 
 export default function HomePage() {
-    const [isNewRecipeModalOpen, setIsNewRecipeModalOpen] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -32,9 +33,18 @@ export default function HomePage() {
     const isSearchMenuOpen = Boolean(searchMenuAnchorEl);
 
     // Handle functions
-    const handleNewRecipeClick = () => {
-        setIsNewRecipeModalOpen(true);
+    const handleCreateClick = () => {
+        setIsCreateModalOpen(true);
     }
+    
+    const handleCreateClose = () => {
+        setIsCreateModalOpen(false)
+    }
+
+    const handleCreateSuccess = () => {
+        devLog("recipe created");
+    }
+    
 
     const handleSearchChange = (search: string) => {
         devLog("search bar content changed");
@@ -70,6 +80,8 @@ export default function HomePage() {
         }
         setSearchParams(newParams);
     }
+
+
 
     return (
         <Container maxWidth='lg' >
@@ -172,15 +184,29 @@ export default function HomePage() {
                         </MenuItem>
                     </Menu>
                     {/* Create new recipe button */}
-                    <Button variant='contained' startIcon={<AddIcon />} onClick={handleNewRecipeClick}>
+                    <Button variant='contained' startIcon={<AddIcon />} onClick={handleCreateClick}>
                         New
                     </Button>
                 </Box>
                 <RecipeList />
             </Box>
-            <CreateRecipe isOpen={isNewRecipeModalOpen}
-                onClose={() => setIsNewRecipeModalOpen(false)}
-                onCreated={() => { }} />
+
+            {/* Modal for creating a recipe */}
+            {isCreateModalOpen && <AppDialog
+                isOpen={isCreateModalOpen}
+                onClose={handleCreateClose}
+            >
+                <DialogTitle>
+                    <Typography variant="h5" sx={{ fontWeight: '600', color: 'text.primary' }}>
+                        New Recipe
+                    </Typography>
+                </DialogTitle>
+                <RecipeForm
+                    formMode={FORM_MODE.CREATE}
+                    onSuccess={handleCreateSuccess}
+                    onClose={handleCreateClose} />
+            </AppDialog>
+            }
         </Container>
     );
 }

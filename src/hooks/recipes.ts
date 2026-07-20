@@ -4,25 +4,28 @@ import { useAuth } from "@clerk/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Services
-import { createRecipe, deleteRecipe, getRecipe, getRecipeList } from "../services/recipeApi";
+import { createRecipe, deleteRecipe, getRecipe, getRecipeList, updateRecipe } from "../services/recipeApi";
 
 // Types
-import type { CreateRecipePayload, SearchType } from "../types/types";
+import type { RecipePayload, SearchType } from "../types/types";
 
+// CREATE
 export function useCreateRecipe() {
     const { getToken } = useAuth();
     const queryClient = useQueryClient();
 
     return useMutation({
         // 1. Fire the POST request with the form data
-        mutationFn: (newRecipe: CreateRecipePayload) => createRecipe(getToken, newRecipe),
-        
+        mutationFn: (newRecipe: RecipePayload) => createRecipe(getToken, newRecipe),
+
         // 2. On success, invalidate the list cache so the new recipe shows up
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["recipeList"] });
         },
     });
 }
+
+// READ
 export function useRecipeList(searchQuery: string, searchBy: SearchType) {
     const { getToken, isLoaded, isSignedIn } = useAuth();
 
@@ -45,6 +48,20 @@ export function useRecipe(id: string | null) {
     });
 }
 
+// UPDATE
+export function useUpdateRecipe() {
+    const { getToken } = useAuth();
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ recipeId, updatedRecipe }: { recipeId: string, updatedRecipe: RecipePayload }) => updateRecipe(getToken, recipeId, updatedRecipe),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["recipeList"] });
+        },
+    });
+}
+
+// DELETE
 export function useDeleteRecipe() {
     const { getToken } = useAuth();
     const queryClient = useQueryClient();
