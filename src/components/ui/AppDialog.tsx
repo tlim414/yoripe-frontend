@@ -17,7 +17,7 @@ export function AppDialog({
 }: AppDialogProps) {
 
     // Prevent closing on backdrop click
-    const handleModalClose: DialogProps["onClose"] = (event, reason) => {
+    const handleModalClose: DialogProps["onClose"] = (_event, reason) => {
         if (reason && reason == "backdropClick") {
             devLog("Backdrop click ignored");
             return;
