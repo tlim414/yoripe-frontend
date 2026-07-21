@@ -55,7 +55,7 @@ export function useUpdateRecipe() {
 
     return useMutation({
         mutationFn: ({ recipeId, updatedRecipe }: { recipeId: string, updatedRecipe: RecipePayload }) => updateRecipe(getToken, recipeId, updatedRecipe),
-        onSuccess: (data, { recipeId }) => {
+        onSuccess: (_data, { recipeId }) => {
             queryClient.invalidateQueries({ queryKey: ["recipeList"] });
             queryClient.invalidateQueries({ queryKey: ["recipe", recipeId] });
         },
