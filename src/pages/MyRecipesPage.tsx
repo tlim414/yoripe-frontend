@@ -12,7 +12,7 @@ import RecipeForm, { FORM_MODE } from "../components/recipes/RecipeForm";
 import RecipeList from "../components/recipes/RecipeList";
 import { AppDialog } from "../components/ui/AppDialog";
 // Contstants
-import { QUERY_PARAMS, SEARCH_TYPE } from "../constants/routes";
+import { QUERY_PARAMS, ROUTES, SEARCH_TYPE } from "../constants/routes";
 // Services
 import { devLog } from "../services/devlog";
 // Types
@@ -49,9 +49,9 @@ export default function MyRecipesPage() {
     const handleSearchChange = (search: string) => {
         devLog("search bar content changed");
         if (search.trim()) {
-            navigate(`${NAV_ITEMS.MY.path}?${QUERY_PARAMS.Q}=${encodeURIComponent(search)}&${QUERY_PARAMS.BY}=${searchOption}`, { replace: true });
+            navigate(`${ROUTES.MY}?${QUERY_PARAMS.Q}=${encodeURIComponent(search)}&${QUERY_PARAMS.BY}=${searchOption}`, { replace: true });
         } else {
-            navigate(`${NAV_ITEMS.MY.path}`, { replace: true });
+            navigate(`${ROUTES.MY}`, { replace: true });
         }
     }
 
