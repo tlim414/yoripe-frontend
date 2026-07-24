@@ -4,6 +4,9 @@ import { Box } from '@mui/material';
 // Clerk
 import { Show, SignInButton, SignUpButton } from '@clerk/react'
 
+// Constants
+import { ROUTES } from '../../constants/routes';
+
 
 export default function Login() {
 
@@ -12,10 +15,10 @@ export default function Login() {
             <Show when="signed-out">
                 <SignInButton
                     mode="modal"
-                    forceRedirectUrl={"/dashboard"} />
+                    forceRedirectUrl={ROUTES.MY} />
                 <SignUpButton
                     mode="modal"
-                    forceRedirectUrl={"/dashboard"} />
+                    forceRedirectUrl={ROUTES.MY} />
             </Show>
         </Box>
     );
