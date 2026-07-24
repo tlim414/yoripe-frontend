@@ -57,7 +57,7 @@ export default function AppLayout({
                         width: 250,
                     }}
                     role="presentation"
-                    onClick={() => { }}>
+                    onClick={handleMenuSideBarClose}>
                     <List>
                         {menuSideBarPages.map((item) => (
                             <ListItem key={item.path}>
