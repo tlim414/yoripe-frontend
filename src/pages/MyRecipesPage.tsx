@@ -12,7 +12,7 @@ import RecipeForm, { FORM_MODE } from "../components/recipes/RecipeForm";
 import RecipeList from "../components/recipes/RecipeList";
 import { AppDialog } from "../components/ui/AppDialog";
 // Contstants
-import { QUERY_PARAMS, SEARCH_TYPE } from "../constants/routes";
+import { NAV_ITEMS, QUERY_PARAMS, SEARCH_TYPE } from "../constants/routes";
 // Services
 import { devLog } from "../services/devlog";
 // Types
@@ -21,7 +21,7 @@ import type { SearchType } from "../types/types";
 
 
 
-export default function HomePage() {
+export default function MyRecipesPage() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     const navigate = useNavigate();
@@ -49,9 +49,9 @@ export default function HomePage() {
     const handleSearchChange = (search: string) => {
         devLog("search bar content changed");
         if (search.trim()) {
-            navigate(`/dashboard?${QUERY_PARAMS.Q}=${encodeURIComponent(search)}&${QUERY_PARAMS.BY}=${searchOption}`, { replace: true });
+            navigate(`${NAV_ITEMS.MY.path}?${QUERY_PARAMS.Q}=${encodeURIComponent(search)}&${QUERY_PARAMS.BY}=${searchOption}`, { replace: true });
         } else {
-            navigate(`/dashboard`, { replace: true });
+            navigate(`${NAV_ITEMS.MY.path}`, { replace: true });
         }
     }
 
