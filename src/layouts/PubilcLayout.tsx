@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import NavBar from "../components/ui/NavBar";
 import Login from "../components/auth/Login";
 
@@ -12,7 +12,20 @@ export default function PublicLayout({
     return (
         <Container maxWidth="lg">
             <NavBar>
-                <Login />
+                <>
+                    {/* App Icon */}
+                    <Box
+                        component="img"
+                        src="/favicon.svg" // Path relative to your Vite 'public' folder
+                        alt="Yoripe Logo"
+                        sx={{
+                            width: 36,
+                            height: 36,
+                            objectFit: 'contain',
+                        }}
+                    />
+                    <Login />
+                </>
             </NavBar>
             {children}
         </Container>
