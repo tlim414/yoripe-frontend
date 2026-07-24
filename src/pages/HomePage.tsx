@@ -49,9 +49,9 @@ export default function HomePage() {
     const handleSearchChange = (search: string) => {
         devLog("search bar content changed");
         if (search.trim()) {
-            navigate(`/?${QUERY_PARAMS.Q}=${encodeURIComponent(search)}&${QUERY_PARAMS.BY}=${searchOption}`, { replace: true });
+            navigate(`/dashboard?${QUERY_PARAMS.Q}=${encodeURIComponent(search)}&${QUERY_PARAMS.BY}=${searchOption}`, { replace: true });
         } else {
-            navigate(`/`, { replace: true });
+            navigate(`/dashboard`, { replace: true });
         }
     }
 
