@@ -12,7 +12,7 @@ import RecipeForm, { FORM_MODE } from "../components/recipes/RecipeForm";
 import RecipeList from "../components/recipes/RecipeList";
 import { AppDialog } from "../components/ui/AppDialog";
 // Contstants
-import { NAV_ITEMS, QUERY_PARAMS, SEARCH_TYPE } from "../constants/routes";
+import { QUERY_PARAMS, SEARCH_TYPE } from "../constants/routes";
 // Services
 import { devLog } from "../services/devlog";
 // Types
