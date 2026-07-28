@@ -139,7 +139,7 @@ export default function RecipeDetailsManager({ onClose, recipeId }: RecipeDetail
                     <IconButton
                         onClick={handleMenuOpen}
                     >
-                        <MoreHorizOutlinedIcon />
+                        <MoreHorizOutlinedIcon color="action"/>
                     </IconButton>
 
 
