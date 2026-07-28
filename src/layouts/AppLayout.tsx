@@ -25,8 +25,8 @@ export default function AppLayout({
 
 
     const menuSideBarPages = [
-        { label: "My Recipe", path: ROUTES.MY, icon: <MenuBookIcon /> },
-        { label: "Explore", path: ROUTES.EXPLORE, icon: <ExploreIcon /> },
+        { label: "My Recipe", path: ROUTES.MY, icon: <MenuBookIcon color="primary"/> },
+        { label: "Explore", path: ROUTES.EXPLORE, icon: <ExploreIcon color="info"/> },
     ]
     const menuSideBarSubItems = [
         { label: "Settings", path: ROUTES.SETTINGS, icon: <SettingsIcon /> },
@@ -45,7 +45,7 @@ export default function AppLayout({
                 <>
                     <IconButton
                         onClick={handleMenuSideBarClick}>
-                        <MenuIcon color="secondary" />
+                        <MenuIcon color="action" />
                     </IconButton>
                     <UserButton />
                 </>
@@ -66,7 +66,7 @@ export default function AppLayout({
                                     to={item.path}
                                     selected={location.pathname === item.path}
                                 >
-                                    <ListItemIcon>{item.icon}</ListItemIcon>
+                                    <ListItemIcon >{item.icon}</ListItemIcon>
                                     <ListItemText primary={item.label} />
                                 </ListItemButton>
                             </ListItem>
@@ -79,7 +79,9 @@ export default function AppLayout({
                                     to={item.path}
                                     selected={location.pathname === item.path}
                                 >
-                                    <ListItemIcon>{item.icon}</ListItemIcon>
+                                    <ListItemIcon>
+                                        {item.icon}
+                                    </ListItemIcon>
                                     <ListItemText primary={item.label} />
                                 </ListItemButton>
                             </ListItem>

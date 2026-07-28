@@ -101,6 +101,7 @@ export default function MyRecipesPage() {
                     <TextField
                         variant="outlined"
                         placeholder="Search..."
+                        color="primary"
                         label={`${searchOption === SEARCH_TYPE.ALL ? "All Fields" : searchOption}`}
                         size="small"
                         onChange={(e) => handleSearchChange(e.target.value)}
@@ -127,9 +128,9 @@ export default function MyRecipesPage() {
                             width: '100%',
                             '& .MuiOutlinedInput-root': {
                                 borderRadius: '50px',
-                                backgroundColor: '#f5f5f5',
+                                backgroundColor: 'background.search',
                                 '&:hover': {
-                                    backgroundColor: '#ebebeb',
+                                    backgroundColor: 'background.searchHover',
                                 },
                             },
                         }}
@@ -164,7 +165,7 @@ export default function MyRecipesPage() {
                         <MenuItem
                             onClick={() => handleSearchBySelect(SEARCH_TYPE.TITLE)}
                             sx={{
-                                color: 'test.primary',
+                                color: 'text.primary',
                                 gap: 1,
                                 fontWeight: '500'
                             }}
@@ -175,7 +176,7 @@ export default function MyRecipesPage() {
                         <MenuItem
                             onClick={() => handleSearchBySelect(SEARCH_TYPE.INGREDIENT)}
                             sx={{
-                                color: 'test.primary',
+                                color: 'text.primary',
                                 gap: 1,
                                 fontWeight: '500'
                             }}
