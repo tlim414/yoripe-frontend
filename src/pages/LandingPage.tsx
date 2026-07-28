@@ -5,8 +5,9 @@ import logo_black from "../assets/logo_black.png";
 import logo_white from "../assets/logo_white.png";
 
 export default function LandingPage() {
-    const { mode } = useColorScheme();
-
+    const { mode, systemMode } = useColorScheme();
+    const activeMode = mode === "system" ? systemMode : mode;
+    
     return (
         <Box sx={{
             display: "flex",
@@ -17,7 +18,7 @@ export default function LandingPage() {
         }}>
             <Box
                 component={"img"}
-                src={mode === "dark" ? logo_white : logo_black}
+                src={activeMode === "dark" ? logo_white : logo_black}
                 sx={{
                     height: 256,
                     width: "auto",
