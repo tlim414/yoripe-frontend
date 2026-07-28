@@ -206,6 +206,7 @@ export default function RecipeForm({
                         label=""
                         placeholder="eg. Cream Pasta"
                         variant="outlined"
+                        color="secondary"
                         size="small"
                         fullWidth
                         required
@@ -222,6 +223,7 @@ export default function RecipeForm({
                         label="Any additional details..."
                         placeholder=""
                         variant="outlined"
+                        color="secondary"
                         size="small"
                         fullWidth
                         disabled={isSubmitting}
@@ -247,6 +249,7 @@ export default function RecipeForm({
                                 label="Name"
                                 placeholder="eg. salt"
                                 variant="outlined"
+                                color="secondary"
                                 size="small"
                                 fullWidth
                                 required
@@ -259,6 +262,7 @@ export default function RecipeForm({
                                 label="Amount"
                                 placeholder=""
                                 variant="outlined"
+                                color="secondary"
                                 size="small"
                                 type="number"
                                 fullWidth
@@ -272,6 +276,7 @@ export default function RecipeForm({
                                 select
                                 label="Unit"
                                 variant="outlined"
+                                color="secondary"
                                 size="small"
                                 fullWidth
                                 // required
@@ -296,6 +301,7 @@ export default function RecipeForm({
                     <Button
                         type="button"
                         variant="contained"
+                        color="secondary"
                         onClick={handleAddIngredient}
                     >
                         Add Ingredient
@@ -324,6 +330,7 @@ export default function RecipeForm({
                                 label=""
                                 placeholder="Explain this step..."
                                 variant="outlined"
+                                color="secondary"
                                 size="small"
                                 fullWidth
                                 disabled={isSubmitting}
@@ -343,6 +350,7 @@ export default function RecipeForm({
                     <Button
                         type="button"
                         variant="contained"
+                        color="secondary"
                         onClick={handleAddInstruction}
                     >
                         Add Step

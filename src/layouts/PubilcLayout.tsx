@@ -16,7 +16,7 @@ export default function PublicLayout({
                     {/* App Icon */}
                     <Box
                         component="img"
-                        src="/favicon.svg" // Path relative to your Vite 'public' folder
+                        src="/favicon.svg"
                         alt="Yoripe Logo"
                         sx={{
                             width: 36,
