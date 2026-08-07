@@ -17,16 +17,12 @@ import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOut
 import { useCreateRecipe, useUpdateRecipe } from "../../hooks/recipes";
 // Services
 import { devLog } from "../../services/devlog";
-import { UNITS } from "../../constants/units";
+import { FORM_MODE, UNITS } from "../../constants/recipes";
 // Types
-import type { RecipePayload, Recipe } from "../../types/types";
+import type { RecipePayload, Recipe, FormMode } from "../../types/types";
 
 
-export const FORM_MODE = {
-    CREATE: "create",
-    EDIT: "edit",
-} as const;
-export type FormMode = typeof FORM_MODE[keyof typeof FORM_MODE];
+
 
 
 type NewIngredient = {

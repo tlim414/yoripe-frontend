@@ -1,3 +1,4 @@
+import type { FORM_MODE } from "../constants/recipes"
 import type { SEARCH_TYPE } from "../constants/routes"
 
 export type Ingredient = {
@@ -39,3 +40,5 @@ export type RecipePayload = {
 }
 
 export type SearchType = typeof SEARCH_TYPE[keyof typeof SEARCH_TYPE];
+
+export type FormMode = typeof FORM_MODE[keyof typeof FORM_MODE];

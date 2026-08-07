@@ -8,7 +8,9 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 
 // Components
 import RecipeDetails from "./RecipeDetails";
-import RecipeForm, { FORM_MODE } from "./RecipeForm";
+import RecipeForm from "./RecipeForm";
+//Constants
+import { FORM_MODE } from "../../constants/recipes";
 // Types
 // Services
 import { devLog } from "../../services/devlog";

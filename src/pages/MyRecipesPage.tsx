@@ -8,11 +8,12 @@ import AddIcon from '@mui/icons-material/Add'
 import FilterListIcon from '@mui/icons-material/FilterList';
 
 // Components
-import RecipeForm, { FORM_MODE } from "../components/recipes/RecipeForm";
+import RecipeForm from "../components/recipes/RecipeForm";
 import RecipeList from "../components/recipes/RecipeList";
 import { AppDialog } from "../components/ui/AppDialog";
 // Contstants
 import { QUERY_PARAMS, ROUTES, SEARCH_TYPE } from "../constants/routes";
+import { FORM_MODE } from "../constants/recipes";
 // Services
 import { devLog } from "../services/devlog";
 // Types
@@ -36,7 +37,7 @@ export default function MyRecipesPage() {
     const handleCreateClick = () => {
         setIsCreateModalOpen(true);
     }
-    
+
     const handleCreateClose = () => {
         setIsCreateModalOpen(false)
     }
@@ -44,7 +45,7 @@ export default function MyRecipesPage() {
     const handleCreateSuccess = () => {
         devLog("recipe created");
     }
-    
+
 
     const handleSearchChange = (search: string) => {
         devLog("search bar content changed");

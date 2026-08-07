@@ -10,3 +10,9 @@ export const UNITS = {
     OZ: "oz",
     LB: "lb",
 } as const;
+
+
+export const FORM_MODE = {
+    CREATE: "create",
+    EDIT: "edit",
+} as const;
