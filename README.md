@@ -7,6 +7,7 @@ pnpm install
 
 # Set up environment variables (.env.local)
 VITE_CLERK_PUBLISHABLE_KEY="your_clerk_publishable_key"
+
 VITE_API_BASE_URL="http://localhost:5050"
 
 # Start Vite development server
