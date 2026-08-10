@@ -1,5 +1,6 @@
 # Clone frontend repository
 git clone [https://github.com/tlim414/yoripe-frontend.git](https://github.com/tlim414/yoripe-frontend.git)
+
 cd yoripe-frontend
 
 # Install dependencies
