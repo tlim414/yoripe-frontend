@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react' // or @vitejs/plugin-react depending on the template generation
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react'; // or @vitejs/plugin-react depending on the template generation
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,7 +11,7 @@ export default defineConfig({
         target: 'http://localhost:5050',
         changeOrigin: true,
         secure: false,
-      }
-    }
-  }
-})
+      },
+    },
+  },
+});
