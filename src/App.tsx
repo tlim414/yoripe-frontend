@@ -1,6 +1,6 @@
-import './App.css'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import './App.css';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 // Components
 import LandingPage from './pages/LandingPage';
@@ -15,7 +15,6 @@ import SettingsPage from './pages/SettingsPage';
 const queryClient = new QueryClient();
 
 function App() {
-
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
@@ -34,7 +33,8 @@ function App() {
                   <Navigate to={ROUTES.MY} replace />
                 </Show>
               </>
-            } />
+            }
+          />
           {/* My Recipes */}
           <Route
             path={ROUTES.MY}
@@ -49,7 +49,8 @@ function App() {
                   <Navigate to={ROUTES.LANDING} replace />
                 </Show>
               </>
-            } />
+            }
+          />
           {/* Explore */}
           <Route
             path={ROUTES.EXPLORE}
@@ -64,7 +65,8 @@ function App() {
                   <Navigate to={ROUTES.LANDING} replace />
                 </Show>
               </>
-            } />
+            }
+          />
           {/* Settings */}
           <Route
             path={ROUTES.SETTINGS}
@@ -79,10 +81,11 @@ function App() {
                   <Navigate to={ROUTES.MY} replace />
                 </Show>
               </>
-            } />
+            }
+          />
           {/* Invalid Route Redirect */}
           <Route
-            path='*'
+            path="*"
             element={
               <>
                 <Show when={'signed-in'}>
@@ -92,12 +95,12 @@ function App() {
                   <Navigate to={ROUTES.LANDING} replace />
                 </Show>
               </>
-            } >
-          </Route>
+            }
+          ></Route>
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
-  )
+  );
 }
 
-export default App
+export default App;

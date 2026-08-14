@@ -2,21 +2,15 @@
 import { Box } from '@mui/material';
 
 // Clerk
-import { Show, SignInButton, SignUpButton } from '@clerk/react'
-
+import { Show, SignInButton, SignUpButton } from '@clerk/react';
 
 export default function Login() {
-
-    return (
-        <Box sx={{ display: 'flex', alignItems: 'center', }}>
-            <Show when="signed-out">
-                <SignInButton
-                    mode="modal"
-                    forceRedirectUrl={"/dashboard"} />
-                <SignUpButton
-                    mode="modal"
-                    forceRedirectUrl={"/dashboard"} />
-            </Show>
-        </Box>
-    );
-};
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Show when="signed-out">
+        <SignInButton mode="modal" forceRedirectUrl={'/dashboard'} />
+        <SignUpButton mode="modal" forceRedirectUrl={'/dashboard'} />
+      </Show>
+    </Box>
+  );
+}
