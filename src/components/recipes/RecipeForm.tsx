@@ -69,6 +69,7 @@ export default function RecipeForm({
 
   // Form States
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [invalidAmounts, setInvalidAmounts] = useState<boolean[]>([false]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -88,10 +89,27 @@ export default function RecipeForm({
     setIsSubmitting(false);
   };
 
+  const isFormValid = () => {
+    // 1. Title must NOT be empty
+    const isTitleValid = title.trim().length > 0;
+
+    // 2. Must have at least one non-empty instruction
+    const hasValidInstructions = instructions.some((inst) => inst.trim().length > 0);
+
+    // 3. Every ingredient must have a non-empty name
+    const hasValidIngredientNames =
+      ingredients.length > 0 && ingredients.every((ing) => ing.name.trim().length > 0);
+
+    // 4. No ingredient amount should be marked as invalid in state
+    const hasNoAmountErrors = !invalidAmounts.some(Boolean);
+
+    return isTitleValid && hasValidInstructions && hasValidIngredientNames && hasNoAmountErrors;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title.trim() || (instructions.length === 1 && !instructions[0].trim())) return;
+    if (!isFormValid()) return;
 
     setIsSubmitting(true);
 
@@ -104,6 +122,7 @@ export default function RecipeForm({
       lastIngredient.amount === '' &&
       lastIngredient.unit === '';
     const cleanedIngredients = hasEmptyIngredient ? ingredients.slice(0, -1) : ingredients;
+
     // Create payload to create recipe
     const payload: RecipePayload = {
       title: title,
@@ -155,6 +174,7 @@ export default function RecipeForm({
       unit: '',
     };
     setIngredients([...ingredients, newIngredient]);
+    setInvalidAmounts([...invalidAmounts, false]);
   };
 
   const handleDeleteIngredient = (idx: number) => {
@@ -165,15 +185,31 @@ export default function RecipeForm({
         unit: '',
       };
       setIngredients([newIngredient]);
+      setInvalidAmounts([false]);
       return;
     }
 
     const updatedIngredients = ingredients.filter((_, i) => i !== idx);
+    const updatedInvalidAmounts = invalidAmounts.filter((_, i) => i !== idx);
     setIngredients(updatedIngredients);
+    setInvalidAmounts(updatedInvalidAmounts);
   };
 
   const handleIngredientChange = (idx: number, field: keyof NewIngredient, value: string) => {
     const updatedIngredients = [...ingredients];
+
+    if (field == 'amount') {
+      // Do a regex to see if imput value is a valid number or a string fraction
+
+      const floatOrFractionRegex = /^(?:\d+(?:\.\d*)?|\.\d+|\d+\s+\d+\/\d+|\d+\/\d*)$/;
+
+      const isInvalid = value.trim() !== '' && !floatOrFractionRegex.test(value.trim());
+      setInvalidAmounts((prev) => {
+        const updatedInvalidAmounts = [...prev];
+        updatedInvalidAmounts[idx] = isInvalid;
+        return updatedInvalidAmounts;
+      });
+    }
 
     updatedIngredients[idx] = {
       ...updatedIngredients[idx],
@@ -437,7 +473,8 @@ export default function RecipeForm({
                 variant="outlined"
                 color="secondary"
                 size="small"
-                type="number"
+                error={invalidAmounts[i]}
+                helperText="eg. 5, 2.5, 1/2, 2 1/3"
                 fullWidth
                 required
                 disabled={isSubmitting}
@@ -525,13 +562,11 @@ export default function RecipeForm({
           Cancel
         </Button>
 
-        {/* 3. Next / Create / Save Edit Button */}
+        {/* 3. Create / Save Edit Button */}
         <Button
           type={'submit'}
           variant="contained"
-          disabled={
-            !title.trim() || (instructions.length === 1 && !instructions[0].trim()) || isSubmitting
-          }
+          disabled={!isFormValid()}
           startIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : null}
           onClick={handleSubmit}
         >
