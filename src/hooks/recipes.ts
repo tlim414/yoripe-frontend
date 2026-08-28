@@ -14,6 +14,7 @@ import {
 
 // Types
 import type { RecipePayload, SearchType } from '../types/types';
+import { extractRecipeInfo } from '../services/genAi';
 
 // CREATE
 export function useCreateRecipe() {
@@ -28,6 +29,14 @@ export function useCreateRecipe() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recipeList'] });
     },
+  });
+}
+
+export function useExtractImage() {
+  const { getToken } = useAuth();
+
+  return useMutation({
+    mutationFn: (imgFile: File) => extractRecipeInfo(getToken, imgFile),
   });
 }
 
