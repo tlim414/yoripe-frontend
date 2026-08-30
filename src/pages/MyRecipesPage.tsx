@@ -12,7 +12,6 @@ import {
   Menu,
   MenuItem,
   TextField,
-  Typography,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
@@ -205,11 +204,7 @@ export default function MyRecipesPage() {
       {/* Modal for creating a recipe */}
       {isCreateModalOpen && (
         <AppDialog isOpen={isCreateModalOpen} onClose={handleCreateClose}>
-          <DialogTitle>
-            <Typography variant="h5" sx={{ fontWeight: '600', color: 'text.primary' }}>
-              New Recipe
-            </Typography>
-          </DialogTitle>
+          <DialogTitle sx={{ fontWeight: '600', color: 'text.primary' }}>New Recipe</DialogTitle>
           <RecipeForm
             formMode={FORM_MODE.CREATE}
             onSuccess={handleCreateSuccess}
