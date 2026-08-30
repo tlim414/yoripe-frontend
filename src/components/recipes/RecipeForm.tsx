@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 // MUI
 import {
   Box,
@@ -11,15 +11,21 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CloseIcon from '@mui/icons-material/Close';
+
+// DropZone
+import { useDropzone } from 'react-dropzone';
 
 // Hooks
-import { useCreateRecipe, useUpdateRecipe } from '../../hooks/recipes';
+import { useCreateRecipe, useExtractImage, useUpdateRecipe } from '../../hooks/recipes';
 // Services
 import { devLog } from '../../services/devlog';
-import { FORM_MODE, UNITS } from '../../constants/recipes';
+import { FORM_MODE, normalizeUnit, UNITS } from '../../constants/recipes';
 // Types
-import type { RecipePayload, Recipe, FormMode } from '../../types/types';
+import type { RecipePayload, Recipe, FormMode, ExtractedRecipe } from '../../types/types';
 
 type NewIngredient = {
   name: string;
@@ -44,6 +50,9 @@ export default function RecipeForm({
   const createMutation = useCreateRecipe();
   const updateMutation = useUpdateRecipe();
 
+  // Gen AI hooks
+  const extractMutation = useExtractImage();
+
   // Form Fields
   const [title, setTitle] = useState(initialData?.title || '');
   const [description, setDescription] = useState(initialData?.description || '');
@@ -60,6 +69,9 @@ export default function RecipeForm({
 
   // Form States
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [invalidAmounts, setInvalidAmounts] = useState<boolean[]>([false]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const resetFields = () => {
     devLog('Resetting form');
@@ -77,10 +89,27 @@ export default function RecipeForm({
     setIsSubmitting(false);
   };
 
+  const isFormValid = () => {
+    // 1. Title must NOT be empty
+    const isTitleValid = title.trim().length > 0;
+
+    // 2. Must have at least one non-empty instruction
+    const hasValidInstructions = instructions.some((inst) => inst.trim().length > 0);
+
+    // 3. Every ingredient must have a non-empty name
+    const hasValidIngredientNames =
+      ingredients.length > 0 && ingredients.every((ing) => ing.name.trim().length > 0);
+
+    // 4. No ingredient amount should be marked as invalid in state
+    const hasNoAmountErrors = !invalidAmounts.some(Boolean);
+
+    return isTitleValid && hasValidInstructions && hasValidIngredientNames && hasNoAmountErrors;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title.trim() || (instructions.length === 1 && !instructions[0].trim())) return;
+    if (!isFormValid()) return;
 
     setIsSubmitting(true);
 
@@ -93,6 +122,7 @@ export default function RecipeForm({
       lastIngredient.amount === '' &&
       lastIngredient.unit === '';
     const cleanedIngredients = hasEmptyIngredient ? ingredients.slice(0, -1) : ingredients;
+
     // Create payload to create recipe
     const payload: RecipePayload = {
       title: title,
@@ -144,6 +174,7 @@ export default function RecipeForm({
       unit: '',
     };
     setIngredients([...ingredients, newIngredient]);
+    setInvalidAmounts([...invalidAmounts, false]);
   };
 
   const handleDeleteIngredient = (idx: number) => {
@@ -154,15 +185,31 @@ export default function RecipeForm({
         unit: '',
       };
       setIngredients([newIngredient]);
+      setInvalidAmounts([false]);
       return;
     }
 
     const updatedIngredients = ingredients.filter((_, i) => i !== idx);
+    const updatedInvalidAmounts = invalidAmounts.filter((_, i) => i !== idx);
     setIngredients(updatedIngredients);
+    setInvalidAmounts(updatedInvalidAmounts);
   };
 
   const handleIngredientChange = (idx: number, field: keyof NewIngredient, value: string) => {
     const updatedIngredients = [...ingredients];
+
+    if (field == 'amount') {
+      // Do a regex to see if imput value is a valid number or a string fraction
+
+      const floatOrFractionRegex = /^(?:\d+(?:\.\d*)?|\.\d+|\d+\s+\d+\/\d+|\d+\/\d*)$/;
+
+      const isInvalid = value.trim() !== '' && !floatOrFractionRegex.test(value.trim());
+      setInvalidAmounts((prev) => {
+        const updatedInvalidAmounts = [...prev];
+        updatedInvalidAmounts[idx] = isInvalid;
+        return updatedInvalidAmounts;
+      });
+    }
 
     updatedIngredients[idx] = {
       ...updatedIngredients[idx],
@@ -194,12 +241,182 @@ export default function RecipeForm({
     setInstructions(updatedInstructions);
   };
 
+  // Helpers for image uploading
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      // Set selected file and preview url to the first item of the accepted files
+      const file = acceptedFiles[0];
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  }, []);
+
+  // Set callback for when file is selected, config accpeted file types and set max file selection
+  // to 1 file
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/*': ['.jpeg', '.jpg', '.png'] },
+    maxFiles: 1,
+  });
+
+  // Reset selected file and preview url
+  const handleReset = () => {
+    setSelectedFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+  };
+
+  const handleImageExtract = async () => {
+    // If not selected file dont do anything
+    if (!selectedFile) return;
+
+    extractMutation.mutate(selectedFile, {
+      onSuccess: (data: ExtractedRecipe) => {
+        // After getting extracted info from backend, set title, description
+        // instructions and ingredients (sanitized to plural)
+        devLog(data);
+        if (data.title) setTitle(data.title);
+        if (data.description) setDescription(data.description);
+        if (data.instructions?.length) setInstructions(data.instructions);
+        if (data.ingredients?.length) {
+          const sanitizedIngredients = data.ingredients.map((ing) => ({
+            name: ing.name,
+            amount: ing.amount,
+            unit: normalizeUnit(ing.unit),
+          }));
+          setIngredients(sanitizedIngredients);
+        }
+      },
+      onError: (err) => {
+        console.error('Extraction failed:', err);
+      },
+    });
+  };
+
   return (
     <Box component="form" onSubmit={handleSubmit}>
       {/* Dialog Content */}
       <DialogContent>
         {/* Title Section */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          {/* Extract From Image */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'start',
+              alignItems: 'center',
+              gap: 1,
+            }}
+          >
+            <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.primary' }}>
+              Extract From Image
+            </Typography>
+            <AutoAwesomeIcon color="info" />
+          </Box>
+
+          {/* Dropzone */}
+          {!previewUrl ? (
+            <Box
+              {...getRootProps()}
+              sx={{
+                border: '2px dashed',
+                borderColor: isDragActive ? 'primary.main' : 'divider',
+                borderRadius: 2,
+                p: 2,
+                textAlign: 'center',
+                cursor: 'pointer',
+                bgcolor: isDragActive ? 'action.hover' : 'background.paper',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  bgcolor: 'action.hover',
+                },
+              }}
+            >
+              <input {...getInputProps()} />
+              <CloudUploadIcon sx={{ fontSize: 36, color: 'text.secondary', mb: 1 }} />
+              <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>
+                {isDragActive
+                  ? 'Drop your image here'
+                  : 'Drag & drop a recipe image, or click to browse'}
+              </Typography>
+              <Typography variant="caption" sx={{ mt: 0.5, color: 'text.secondary' }}>
+                Supports JPEG, JPG, PNG
+              </Typography>
+            </Box>
+          ) : (
+            /* Preview File Container */
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Box
+                sx={{
+                  position: 'relative',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  maxHeight: 220,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  bgcolor: 'background.default',
+                }}
+              >
+                <Box
+                  component="img"
+                  src={previewUrl}
+                  alt="Recipe source preview"
+                  sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <IconButton
+                  size="small"
+                  onClick={handleReset}
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    bgcolor: 'rgba(0, 0, 0, 0.6)',
+                    color: 'white',
+                    '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.8)' },
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Box>
+              {/* Render selected file name */}
+              {selectedFile && (
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  {selectedFile.name}
+                </Typography>
+              )}
+              {/* Extract button */}
+              <Button
+                color="secondary"
+                variant="contained"
+                disabled={!selectedFile}
+                onClick={handleImageExtract}
+                startIcon={
+                  extractMutation.isPending ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <AutoAwesomeIcon color="info" />
+                  )
+                }
+              >
+                Extract
+              </Button>
+            </Box>
+          )}
+
           <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.primary' }}>
             Recipe Name
           </Typography>
@@ -233,7 +450,7 @@ export default function RecipeForm({
           />
 
           {/* Ingredients Section */}
-          <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.primary' }}>
             Ingredients
           </Typography>
           {ingredients.map((ingredient, i) => (
@@ -265,7 +482,8 @@ export default function RecipeForm({
                 variant="outlined"
                 color="secondary"
                 size="small"
-                type="number"
+                error={invalidAmounts[i]}
+                helperText="eg. 5, 2.5, 1/2, 2 1/3"
                 fullWidth
                 required
                 disabled={isSubmitting}
@@ -301,7 +519,7 @@ export default function RecipeForm({
           </Button>
 
           {/* Instructions section */}
-          <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.secondary' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: '600', color: 'text.primary' }}>
             Instructions
           </Typography>
           {instructions.map((step, i) => (
@@ -353,13 +571,11 @@ export default function RecipeForm({
           Cancel
         </Button>
 
-        {/* 3. Next / Create / Save Edit Button */}
+        {/* 3. Create / Save Edit Button */}
         <Button
           type={'submit'}
           variant="contained"
-          disabled={
-            !title.trim() || (instructions.length === 1 && !instructions[0].trim()) || isSubmitting
-          }
+          disabled={!isFormValid()}
           startIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : null}
           onClick={handleSubmit}
         >

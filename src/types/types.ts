@@ -42,3 +42,16 @@ export type RecipePayload = {
 export type SearchType = (typeof SEARCH_TYPE)[keyof typeof SEARCH_TYPE];
 
 export type FormMode = (typeof FORM_MODE)[keyof typeof FORM_MODE];
+
+export type ExtractedIngredient = {
+  name: string;
+  amount: string;
+  unit: string;
+};
+
+export type ExtractedRecipe = {
+  title: string;
+  description: string;
+  instructions: string[];
+  ingredients: ExtractedIngredient[];
+};
