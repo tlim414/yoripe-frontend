@@ -23,7 +23,7 @@ import { useDropzone } from 'react-dropzone';
 import { useCreateRecipe, useExtractImage, useUpdateRecipe } from '../../hooks/recipes';
 // Services
 import { devLog } from '../../services/devlog';
-import { FORM_MODE, UNITS } from '../../constants/recipes';
+import { FORM_MODE, normalizeUnit, UNITS } from '../../constants/recipes';
 // Types
 import type { RecipePayload, Recipe, FormMode, ExtractedRecipe } from '../../types/types';
 
@@ -51,7 +51,7 @@ export default function RecipeForm({
   const updateMutation = useUpdateRecipe();
 
   // Gen AI hooks
-  const { mutate: extractRecipe, isPending, isError, error } = useExtractImage();
+  const extractMutation = useExtractImage();
 
   // Form Fields
   const [title, setTitle] = useState(initialData?.title || '');
@@ -272,13 +272,22 @@ export default function RecipeForm({
     // If not selected file dont do anything
     if (!selectedFile) return;
 
-    extractRecipe(selectedFile, {
+    extractMutation.mutate(selectedFile, {
       onSuccess: (data: ExtractedRecipe) => {
+        // After getting extracted info from backend, set title, description
+        // instructions and ingredients (sanitized to plural)
         devLog(data);
         if (data.title) setTitle(data.title);
         if (data.description) setDescription(data.description);
         if (data.instructions?.length) setInstructions(data.instructions);
-        if (data.ingredients?.length) setIngredients(data.ingredients);
+        if (data.ingredients?.length) {
+          const sanitizedIngredients = data.ingredients.map((ing) => ({
+            name: ing.name,
+            amount: ing.amount,
+            unit: normalizeUnit(ing.unit),
+          }));
+          setIngredients(sanitizedIngredients);
+        }
       },
       onError: (err) => {
         console.error('Extraction failed:', err);
@@ -396,7 +405,7 @@ export default function RecipeForm({
                 disabled={!selectedFile}
                 onClick={handleImageExtract}
                 startIcon={
-                  isPending ? (
+                  extractMutation.isPending ? (
                     <CircularProgress size={20} color="inherit" />
                   ) : (
                     <AutoAwesomeIcon color="info" />
